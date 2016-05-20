@@ -26,8 +26,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	// "https://github.com/hyperledger/fabric/tree/master/core/chaincode/shim"
+	"github.com/openblockchain/obc-peer/openchain/chaincode/shim"
 )
 
 // SimpleChaincode example simple Chaincode implementation
@@ -65,7 +64,7 @@ func main() {
 // ============================================================================================================================
 // Init - reset all the things
 // ============================================================================================================================
-func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) init(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	var Aval int
 	var err error
 
@@ -96,22 +95,14 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 }
 
 // ============================================================================================================================
-// Run - Our entry point for Invocations - [LEGACY] obc-peer 4/25/2016
+// Run - Our entry point
 // ============================================================================================================================
 func (t *SimpleChaincode) Run(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	fmt.Println("run is running " + function)
-	return t.Invoke(stub, function, args)
-}
-
-// ============================================================================================================================
-// Invoke - Our entry point for Invocations
-// ============================================================================================================================
-func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
 	if function == "init" {													//initialize the chaincode state, used as reset
-		return t.Init(stub, "init", args)
+		return t.init(stub, args)
 	} else if function == "delete" {										//deletes an entity from its state
 		return t.Delete(stub, args)
 	} else if function == "write" {											//writes a value to the chaincode state
@@ -121,7 +112,7 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 	} else if function == "set_user" {										//change owner of a marble
 		return t.set_user(stub, args)
 	}
-	fmt.Println("invoke did not find func: " + function)					//error
+	fmt.Println("run did not find func: " + function)						//error
 
 	return nil, errors.New("Received unknown function invocation")
 }
@@ -204,7 +195,7 @@ func (t *SimpleChaincode) Delete(stub *shim.ChaincodeStub, args []string) ([]byt
 // ============================================================================================================================
 // Write - write variable into chaincode state
 // ============================================================================================================================
-func (t *SimpleChaincode) Rrrite(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Write(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	var name, value string // Entities
 	var err error
 	fmt.Println("running write()")
@@ -280,8 +271,6 @@ func (t *SimpleChaincode) init_marble(stub *shim.ChaincodeStub, args []string) (
 	return nil, nil
 }
 
-
-
 // ============================================================================================================================
 // create vote
 // ============================================================================================================================
@@ -339,9 +328,6 @@ func (t *SimpleChaincode) create_vote(stub *shim.ChaincodeStub, args []string) (
 	return nil, nil
 
 }
-
-
-
 
 // ============================================================================================================================
 // Set User Permission on Marble
